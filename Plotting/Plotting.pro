@@ -28,13 +28,17 @@ SOURCES += \
         mainwindow.cpp \
     qcustomplot.cpp \
     polynomial.cpp \
-    sine.cpp
+    sine.cpp \
+    cosine.cpp \
+    logarithm.cpp
 
 HEADERS += \
         mainwindow.h \
     qcustomplot.h \
     polynomial.h \
-    sine.h
+    sine.h \
+    cosine.h \
+    logarithm.h
 
 FORMS += \
         mainwindow.ui

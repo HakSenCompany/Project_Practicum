@@ -13,7 +13,6 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    void linear(QString input);
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 

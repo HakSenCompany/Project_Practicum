@@ -36,13 +36,15 @@ int Polynomial::getConstant(QString input){
         }
     }
     for(int j=i; j<input.length(); j++){
-        if(input[i] == 'x'){
+        if(input[j] == 'x'){
             constant = "0";
-        }else
-            constant = constant + Input[j];
+            return atoi(constant.c_str());
+        }
+        else{
+            constant += Input[j];
+        }
     }
-    int con = atoi(constant.c_str());
-    return con;
+    return atoi(constant.c_str());
 }
 
 int *Polynomial::getPower(QString input)
@@ -56,25 +58,29 @@ int *Polynomial::getPower(QString input)
     int pos = this->countX(input);
     int i, j=0, k, l;
     for(k=0; k<pos; k++){
+
         for(i=j; i<input.length(); i++){
-            if(input[i] == 'x'){
-                if(input[i+1] == '^'){
-                    for(l=i+2; l<input.length(); l++){
-                        if(input[l] == '+' || input[l] == '-' || input[l] == NULL){
-                            break;
-                        }
-                        for(int z=i+2; z<l; z++){
-                            A = A + inputed[z];
-                        }
-                    }
-                }
-                else{
-                    A = "1";
-                }
+            if(input[i] == '^'){
+                j = i+1;
+                break;
             }
         }
+        for(l=i; l<input.length(); l++){
+            if(input[l] == '+' || input[l] == '-'){
+                break;
+            }
+        }
+        for(int f=i+1; f<l; f++){
+            A = A + inputed[f];
+        }
         p[k] = atoi(A.c_str());
+        if(p[k] == 0){
+            p[k] = 1;
+        }
+        A = "";
     }
+    return p;
+
 }
 
 int *Polynomial::getCoeffecient(QString input){
@@ -85,7 +91,7 @@ int *Polynomial::getCoeffecient(QString input){
     }
     p[0] = Polynomial::firstCoeffcient(input);
     std::string inputed = input.toStdString();
-    int i, j=0, k, l, o=0;
+    int i, j=0, k, l;
     int pos = Polynomial::countX(input);
     for(k=1; k<=pos; k++){
         for(i=j; i<input.length(); i++){
@@ -97,8 +103,6 @@ int *Polynomial::getCoeffecient(QString input){
         }
         for(l=i; l<input.length(); l++){
             if(input[l] == 'x'){
-                //qDebug()<<l;
-                o = l+1;
                 break;
             }
         }
@@ -106,9 +110,72 @@ int *Polynomial::getCoeffecient(QString input){
             A = A + inputed[f];
         }
         p[k] = atoi(A.c_str());
+        if(p[k] == 0){
+            p[k] = 1;
+        }
         A = "";
     }
     return p;
+}
+
+void Polynomial::linear(QString input, Ui::MainWindow *ui){
+    Polynomial polynomial;
+
+    double x = 0;
+    QVector<double>X(201), Y(201);
+    while(x<=200){
+        X[x] = x/4-25;
+        Y[x] = polynomial.firstCoeffcient(input)*X[x] + polynomial.getConstant(input);
+        x++;
+    }
+    ui->customPlot->addGraph();
+    ui->customPlot->graph(0)->setPen(QPen(Qt::red,2));
+    ui->customPlot->graph(0)->setData(X,Y);
+    ui->customPlot->replot();
+}
+
+void Polynomial::Quatratic(QString input, Ui::MainWindow *ui)
+{
+    double x = 0;
+    QVector<double>X(201), Y(201);
+    while(x<=200){
+        X[x] = x/4 - 25;
+        Y[x] = getCoeffecient(input)[0]*pow(X[x],getPower(input)[0])
+                + getCoeffecient(input)[1]*X[x]
+                + getConstant(input);
+        x++;
+    }
+    ui->customPlot->addGraph();
+    ui->customPlot->graph(0)->setPen(QPen(Qt::red,2));
+    ui->customPlot->graph(0)->setData(X,Y);
+    ui->customPlot->replot();
+}
+
+void Polynomial::polyFunction(QString input, Ui::MainWindow *ui)
+{
+    double x = 0;
+    double y = 0;
+    int i = 0;
+    QVector<double> X(201), Y(201);
+    while(x<=200){
+        X[x] = x/4 - 25;
+        for (i=0; i<countX(input); i++){
+            y = y + getCoeffecient(input)[i] * pow(X[x], getPower(input)[i]);
+            //qDebug()<<y;
+            //qDebug()<<getCoeffecient(input)[i];
+            //qDebug()<<getPower(input)[i];
+        }
+        //qDebug()<<getConstant(input);
+        Y[x] = y + (double)getConstant(input);
+        y = 0;
+        i = 0;
+        x++;
+    }
+    ui->customPlot->addGraph();
+    ui->customPlot->graph(0)->setPen(QPen(Qt::red,2));
+    ui->customPlot->graph(0)->setData(X,Y);
+    ui->customPlot->replot();
+
 }
 
 
